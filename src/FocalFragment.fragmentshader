@@ -6,6 +6,12 @@ struct Material {
 	vec3 Lambient;
 	vec3 Ldiffuse;
 	vec3 Lspecular;	
+	vec3 Ldirection;
+	float Lconstant;
+	float Llinear;
+	float Lquadratic;
+	float LcutOff;
+	float LouterCutOff;
 };  
 
 
@@ -16,24 +22,15 @@ out vec4 color;
 
 uniform vec3 lightPos; 
 uniform vec3 viewPos;
-uniform vec3 lightColor;
-uniform vec3 objectColor;
 
-
-uniform vec3 Ldirection;
-uniform	float Lconstant;
-uniform	float Llinear;
-uniform	float Lquadratic;
-uniform float LcutOff;
-uniform float LouterCutOff;
 uniform Material material;
 
 void main()
 {	
 	vec3 lightDir = normalize(lightPos-FragPos);
-	float theta = dot(lightDir, normalize(-Ldirection));
+	float theta = dot(lightDir, normalize(-material.Ldirection));
 	
-	if(theta>LouterCutOff){
+	if(theta>material.LouterCutOff){
 	 // Ambient
 		vec3 ambient = material.Lambient* vec3(texture(material.diffuse, TexCoords));	
 	
@@ -51,14 +48,14 @@ void main()
 		
 	//Distance
 		
-		float epsilon = LcutOff-LouterCutOff;
-		float intensity =clamp((theta-LouterCutOff)/epsilon,0,1);
+		float epsilon = material.LcutOff-material.LouterCutOff;
+		float intensity =clamp((theta-material.LouterCutOff)/epsilon,0,1);
 
 		diffuse  *= intensity;
 		specular *= intensity;   
 		
 		float distance    = length(lightPos - FragPos);
-		float attenuation = 1.0f / (Lconstant + Llinear * distance + Lquadratic * (distance * distance));    
+		float attenuation = 1.0f / (material.Lconstant + material.Llinear * distance + material.Lquadratic * (distance * distance));    
 		ambient  *= attenuation;
 		diffuse  *= attenuation;
 		specular *= attenuation;   
@@ -68,9 +65,9 @@ void main()
    }
    else {
 		vec3 ambient = material.Lambient* vec3(texture(material.diffuse, TexCoords));	
-		float distance    = length(lightPos - FragPos);
-		float attenuation = 1.0f / (Lconstant + Llinear * distance + Lquadratic * (distance * distance)); 
-		ambient  *= attenuation;		
+//		float distance    = length(lightPos - FragPos);
+//		float attenuation = 1.0f / (material.Lconstant + material.Llinear * distance + material.Lquadratic * (distance * distance)); 
+//		ambient  *= attenuation;		
 		color = vec4 ((ambient),1.0f);
 	}
 	

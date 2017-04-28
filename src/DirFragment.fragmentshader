@@ -6,6 +6,7 @@ struct Material {
 	vec3 Lambient;
 	vec3 Ldiffuse;
 	vec3 Lspecular;	
+	vec3 Ldirection;
 };  
 
 in vec3 FragPos;  
@@ -15,11 +16,9 @@ out vec4 color;
 
 uniform vec3 lightPos; 
 uniform vec3 viewPos;
-uniform vec3 lightColor;
-uniform vec3 objectColor;
 
 
-uniform	vec3 Ldirection;
+
 
 uniform Material material;
 void main()
@@ -27,7 +26,7 @@ void main()
     // Ambient
 
 	vec3 ambient = material.Lambient* vec3(texture(material.diffuse, TexCoords));
-   	vec3 lightDir = normalize(-Ldirection);
+   	vec3 lightDir = normalize(-material.Ldirection);
  
  // Diffuse 
     vec3 norm = normalize(Normal);

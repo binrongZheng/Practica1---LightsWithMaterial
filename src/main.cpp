@@ -112,8 +112,7 @@ int main() {
 
 		//establecer el shader
 		
-		GLint objectColorLoc, lightColorLoc, lightPosLoc, viewPosLoc;
-		GLint lightDirPos;
+		GLint lightPosLoc, viewPosLoc,lightDirPos;
 		mat4 proj;		mat4 view;		mat4 model;
 		GLint modelLoc, viewLoc, projectionLoc;
 //////////////////////////////////////////////////LIGHTS-DIRECCIONAL///////////////////////////////////////////////////
@@ -122,16 +121,11 @@ int main() {
 			DireccionShader.USE();
 			material.SetShininess(&DireccionShader);
 			material.ActivateTextures();
-			objectColorLoc = glGetUniformLocation(DireccionShader.Program, "objectColor");
-			lightColorLoc = glGetUniformLocation(DireccionShader.Program, "lightColor");
 			lightPosLoc = glGetUniformLocation(DireccionShader.Program, "lightPos");
 			viewPosLoc = glGetUniformLocation(DireccionShader.Program, "viewPos");
-				
-			glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.0f);
-			glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f);
 
 			//direccional
-			lightDirPos = glGetUniformLocation(DireccionShader.Program, "Ldirection");
+			lightDirPos = glGetUniformLocation(DireccionShader.Program, "material.Ldirection");
 			glUniform3f(lightDirPos, -0.2f, -1.0f, -0.3f);
 			glUniform3f(lightPosLoc, cubB.GetPosition().x, cubB.GetPosition().y, cubB.GetPosition().z);
 			glUniform3f(viewPosLoc, myCamera.cameraPos.x, myCamera.cameraPos.y, myCamera.cameraPos.z);
@@ -166,13 +160,8 @@ int main() {
 			PointShader.USE();
 			material.SetShininess(&PointShader);
 			material.ActivateTextures();
-			objectColorLoc = glGetUniformLocation(PointShader.Program, "objectColor");
-			lightColorLoc = glGetUniformLocation(PointShader.Program, "lightColor");
 			lightPosLoc = glGetUniformLocation(PointShader.Program, "lightPos");
 			viewPosLoc = glGetUniformLocation(PointShader.Program, "viewPos");
-
-			glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.0f);
-			glUniform3f(lightColorLoc, 1.0f, 1.0f, 4.0f);
 
 			//Puntual
 			glUniform3f(lightPosLoc, cubB.GetPosition().x, cubB.GetPosition().y, cubB.GetPosition().z);
@@ -186,9 +175,9 @@ int main() {
 			glUniform3f(glGetUniformLocation(PointShader.Program, "material.Lambient"), 0.2f, 0.2f, 0.2f);
 			glUniform3f(glGetUniformLocation(PointShader.Program, "material.Ldiffuse"), 0.5f, 0.5f, 0.5f);
 			glUniform3f(glGetUniformLocation(PointShader.Program, "material.Lspecular"), 1.0f, 1.0f, 1.0f);
-			glUniform1f(glGetUniformLocation(PointShader.Program, "Lconstant"), 1.0f);
-			glUniform1f(glGetUniformLocation(PointShader.Program, "Llinear"), 0.09);
-			glUniform1f(glGetUniformLocation(PointShader.Program, "Lquadratic"), 0.032);
+			glUniform1f(glGetUniformLocation(PointShader.Program, "material.Lconstant"), 1.0f);
+			glUniform1f(glGetUniformLocation(PointShader.Program, "material.Llinear"), 0.09);
+			glUniform1f(glGetUniformLocation(PointShader.Program, "material.Lquadratic"), 0.032);
 
 			cubA.Rotate(radiansX, radiansY);
 			cubA.Move(movement);
@@ -211,16 +200,12 @@ int main() {
 			FocalShader.USE();
 			material.SetShininess(&FocalShader);
 			material.ActivateTextures();
-			objectColorLoc = glGetUniformLocation(FocalShader.Program, "objectColor");
-			lightColorLoc = glGetUniformLocation(FocalShader.Program, "lightColor");
 			lightPosLoc = glGetUniformLocation(FocalShader.Program, "lightPos");
 			viewPosLoc = glGetUniformLocation(FocalShader.Program, "viewPos");
-			lightDirPos = glGetUniformLocation(FocalShader.Program, "Ldirection");
-			GLint lightSpotCutOffLoc = glGetUniformLocation(FocalShader.Program, "LcutOff");
-			GLint lightSpotOuterCutOffLoc = glGetUniformLocation(FocalShader.Program, "LouterCutOff");
+			lightDirPos = glGetUniformLocation(FocalShader.Program, "material.Ldirection");
+			GLint lightSpotCutOffLoc = glGetUniformLocation(FocalShader.Program, "material.LcutOff");
+			GLint lightSpotOuterCutOffLoc = glGetUniformLocation(FocalShader.Program, "material.LouterCutOff");
 			
-			glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.0f);
-			glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f);
 			glUniform1f(lightSpotCutOffLoc, glm::cos(glm::radians(45.5f)));
 			glUniform1f(lightSpotOuterCutOffLoc, glm::cos(glm::radians(60.5f)));
 			//glUniform3f(lightDirPos, myCamera.cameraFront.x, myCamera.cameraFront.y, myCamera.cameraFront.z);
@@ -238,9 +223,9 @@ int main() {
 			glUniform3f(glGetUniformLocation(FocalShader.Program, "material.Lambient"), 0.1f, 0.1f, 0.1f);
 			glUniform3f(glGetUniformLocation(FocalShader.Program, "material.Ldiffuse"), 0.8f, 0.8f, 0.8f);
 			glUniform3f(glGetUniformLocation(FocalShader.Program, "material.Lspecular"), 1.0f, 1.0f, 1.0f);
-			glUniform1f(glGetUniformLocation(FocalShader.Program, "Lconstant"), 1.0f);
-			glUniform1f(glGetUniformLocation(FocalShader.Program, "Llinear"), 0.09);
-			glUniform1f(glGetUniformLocation(FocalShader.Program, "Lquadratic"), 0.032);
+			glUniform1f(glGetUniformLocation(FocalShader.Program, "material.Lconstant"), 1.0f);
+			glUniform1f(glGetUniformLocation(FocalShader.Program, "material.Llinear"), 0.09);
+			glUniform1f(glGetUniformLocation(FocalShader.Program, "material.Lquadratic"), 0.032);
 
 			cubA.Rotate(radiansX, radiansY);
 			cubA.Move(movement);
