@@ -1,0 +1,77 @@
+#version 330 core
+struct Material {
+    sampler2D diffuse;
+    sampler2D specular;
+    float     shininess;
+	vec3 Lambient;
+	vec3 Ldiffuse;
+	vec3 Lspecular;	
+};  
+
+
+in vec3 FragPos;  
+in vec3 Normal; 
+in vec2 TexCoords; 
+out vec4 color;
+
+uniform vec3 lightPos; 
+uniform vec3 viewPos;
+uniform vec3 lightColor;
+uniform vec3 objectColor;
+
+
+uniform vec3 Ldirection;
+uniform	float Lconstant;
+uniform	float Llinear;
+uniform	float Lquadratic;
+uniform float LcutOff;
+uniform float LouterCutOff;
+uniform Material material;
+
+void main()
+{	
+	vec3 lightDir = normalize(lightPos-FragPos);
+	float theta = dot(lightDir, normalize(-Ldirection));
+	
+	if(theta>LouterCutOff){
+	 // Ambient
+		vec3 ambient = material.Lambient* vec3(texture(material.diffuse, TexCoords));	
+	
+	// Diffuse 
+		vec3 norm=normalize(Normal);
+		
+		float diff = max(dot(norm, lightDir), 0.0);
+		vec3 diffuse = material.Ldiffuse * diff * vec3(texture(material.diffuse, TexCoords));
+		
+		// Specular
+		vec3 viewDir = normalize(viewPos - FragPos);
+		vec3 reflectDir = reflect(-lightDir, norm);  
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+		vec3 specular = material.Lspecular * spec * vec3(texture(material.specular, TexCoords));  
+		
+	//Distance
+		
+		float epsilon = LcutOff-LouterCutOff;
+		float intensity =clamp((theta-LouterCutOff)/epsilon,0,1);
+
+		diffuse  *= intensity;
+		specular *= intensity;   
+		
+		float distance    = length(lightPos - FragPos);
+		float attenuation = 1.0f / (Lconstant + Llinear * distance + Lquadratic * (distance * distance));    
+		ambient  *= attenuation;
+		diffuse  *= attenuation;
+		specular *= attenuation;   
+		
+	// Finally    
+		color = vec4 ((ambient+diffuse+specular),1.0f);
+   }
+   else {
+		vec3 ambient = material.Lambient* vec3(texture(material.diffuse, TexCoords));	
+		float distance    = length(lightPos - FragPos);
+		float attenuation = 1.0f / (Lconstant + Llinear * distance + Lquadratic * (distance * distance)); 
+		ambient  *= attenuation;		
+		color = vec4 ((ambient),1.0f);
+	}
+	
+}

@@ -1,0 +1,46 @@
+#version 330 core
+struct Material {
+    sampler2D diffuse;
+    sampler2D specular;
+    float     shininess;
+	vec3 Lambient;
+	vec3 Ldiffuse;
+	vec3 Lspecular;	
+};  
+
+in vec3 FragPos;  
+in vec3 Normal;  
+in vec2 TexCoords;
+out vec4 color;
+
+uniform vec3 lightPos; 
+uniform vec3 viewPos;
+uniform vec3 lightColor;
+uniform vec3 objectColor;
+
+
+uniform	vec3 Ldirection;
+
+uniform Material material;
+void main()
+{	
+    // Ambient
+
+	vec3 ambient = material.Lambient* vec3(texture(material.diffuse, TexCoords));
+   	vec3 lightDir = normalize(-Ldirection);
+ 
+ // Diffuse 
+    vec3 norm = normalize(Normal);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = material.Ldiffuse * diff * vec3(texture(material.diffuse, TexCoords));
+    
+    // Specular
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = material.Lspecular * spec * vec3(texture(material.specular, TexCoords));  
+    
+	// Finally    
+    color = vec4(ambient + diffuse + specular, 1.0f);
+	
+}
