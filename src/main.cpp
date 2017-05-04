@@ -18,15 +18,11 @@
 using namespace glm;
 using namespace std;
 const GLint WIDTH = 800, HEIGHT = 800;
-bool WIREFRAME = false;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-vec3 mov, rot, scal;
+
 vec3 movement;
 GLfloat radiansX,radiansY;
-GLfloat mixValor;
-GLfloat radX = 0;
-GLfloat radY = 0;
 GLint LightOption=3;
 Camera myCamera({ 0,0,3 }, { 0,0,-1 }, 0.05, 45);
 
@@ -35,7 +31,6 @@ void MouseScroll(GLFWwindow* window, double xScroll, double yScroll) {
 };
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-
 
 
 int main() {
@@ -83,7 +78,6 @@ int main() {
 	
 	//cargamos los shader
 	glEnable(GL_DEPTH_TEST);
-//	Shader LightShader("./src/LightVertex.vertexshader", "./src/LightFragment.fragmentshader");
 	Shader ReceiveShader("./src/ReceiveVertex.vertexshader", "./src/ReceiveFragment.fragmentshader");
 
 	Shader DireccionShader("./src/DirVertex.vertexshader", "./src/DirFragment.fragmentshader");
@@ -208,8 +202,7 @@ int main() {
 			
 			glUniform1f(lightSpotCutOffLoc, glm::cos(glm::radians(45.5f)));
 			glUniform1f(lightSpotOuterCutOffLoc, glm::cos(glm::radians(60.5f)));
-			//glUniform3f(lightDirPos, myCamera.cameraFront.x, myCamera.cameraFront.y, myCamera.cameraFront.z);
-			glUniform3f(lightDirPos, 0, -1, 0);
+			glUniform3f(lightDirPos, 0, 0, -1);
 
 			//Puntual
 			glUniform3f(lightPosLoc, cubB.GetPosition().x, cubB.GetPosition().y, cubB.GetPosition().z);
@@ -272,12 +265,7 @@ int main() {
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
-	if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		WIREFRAME = !WIREFRAME;
-	if (key == GLFW_KEY_1 && mixValor + 0.02 <= 1)
-		mixValor += 0.02;
-	if (key == GLFW_KEY_2 && mixValor - 0.02 >= 0)
-		mixValor -= 0.02;
+
 	if (key == GLFW_KEY_KP_4)
 		radiansX -= 0.5;
 	if (key == GLFW_KEY_KP_6)
@@ -296,11 +284,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_DOWN )
 		movement.y -= 0.05;
 
-	if (key == GLFW_KEY_5)
+	if (key == GLFW_KEY_1)
 		LightOption = 1;
-	if (key == GLFW_KEY_6)
+	if (key == GLFW_KEY_2)
 		LightOption = 2;
-	if (key == GLFW_KEY_7)
+	if (key == GLFW_KEY_3)
 		LightOption = 3;
 }
 
